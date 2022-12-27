@@ -6,6 +6,8 @@ from thinc.api import Adam
 import random
 from matplotlib import pyplot as plt
 from spacy.training import Example
+from spacy.scorer import Scorer
+
 
 def custom_optimizer(optimizer, learn_rate=0.0001, beta1=0.9, beta2=0.999, eps=1e-8, L2=1e-6, max_grad_norm=1.0):
     """
@@ -63,6 +65,9 @@ def train_spacy(data,
         L2_is_weight_decay=True
     )
     loss_list = []
+    examples = []
+
+    scorer = Scorer()
     # optimizer = custom_optimizer(optimizer, learn_rate=learn_rate)
     for itn in range(iterations):
         print("Starting iteration " + str(itn))
@@ -73,7 +78,22 @@ def train_spacy(data,
                 doc = nlp.make_doc(text)
                 example = Example.from_dict(doc, annotations)
                 nlp.update([example], drop=0.35, sgd=optimizer, losses=losses)
+                example.predicted = nlp(str(example.predicted))
+                examples.append(example)
         print(losses)
         loss_list.append(losses)
-    return nlp, loss_list
+    scorer.score(examples)
+    print(scorer)
+    return nlp, loss_list, scorer
+
+def my_evaluate(ner_model, examples):
+    scorer = Scorer()
+    example = []
+    for input_, annotations in examples:
+        pred = ner_model(input_)
+        print(pred,annotations)
+        temp = Example.from_dict(pred, dict.fromkeys(annotations))
+        example.append(temp)
+    scores = scorer.score(example)
+    return scores
     

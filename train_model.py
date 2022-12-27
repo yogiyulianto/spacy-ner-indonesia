@@ -5,29 +5,13 @@ from bs4 import BeautifulSoup as bs
 from nltk.tokenize import sent_tokenize
 import pandas as pd
 
-link = 'https://republika.co.id/berita/qcsbt4383/akhlak-sebagai-emcore-valueem-bumn-erick-thohir-bismillah' #'https://ekonomi-islam.com/tag/teori-teori-ekonomi-islam/'
-req = requests.get(link)
-soup = bs(req.content, 'html5lib')
-
-paragraphs = soup.findAll('p')
-
-text = []
-for p in paragraphs:
-  text.append(p.text)
-
-text_ready = ' '.join(text[5:7])
 annotations = sorted([
                'peternakan'
                ])
 from BIOtagging import text_to_tagReadyDF, convert_to_spaCyformat
 
-tagready_df = text_to_tagReadyDF(pd.Series([text_ready]), isCSV=False)
-
-link_for_save = "C:/Users/userk/OneDrive/Documents/development/research/NER/spaCy-NER/text_tagged.csv"
-tagready_df.to_csv(link_for_save, index=False)
-
 # import BIO-tagged csv file
-link_BIOtagged_file = "C:/Users/userk/OneDrive/Documents/development/research/NER/spaCy-NER/text_tagged_pti.csv"
+link_BIOtagged_file = "C:/Users/userk/OneDrive/Documents/development/research/NER/text_tagged_pti.csv"
 df_tagged = pd.read_csv(link_BIOtagged_file)
 # lowercase value on column BIO_tag_0
 df_tagged['BIO_tag_0'] = df_tagged['BIO_tag_0'].str.lower()
@@ -46,11 +30,14 @@ for i in range(len(df_tagged)):
 df_tagged_new = pd.DataFrame({'token_0': token_0_list, 'BIO_tag_0': BIO_tag_0_list})
 train_data = convert_to_spaCyformat(df_tagged, annotations)
 from train_spacy import train_spacy
-
-model, loss = train_spacy([train_data], 100) # using 100 iterations
-# Save our trained model
-modelfile = input("Enter your Model Name: ")
-model.to_disk(modelfile)
+scorer = ()
+model, loss, scorer = train_spacy([train_data], 100) # using 100 iterations
+# get accuracy from scorer
+accuracy = scorer.score['ents_f']
+print(accuracy)
+# # Save our trained model
+# modelfile = input("Enter your Model Name: ")
+# model.to_disk(modelfile)
 
 
 
