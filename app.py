@@ -32,7 +32,7 @@ def get_distance(lat1, lon1, lat2, lon2):
 @app.route("/", methods=['GET'])
 def all():
     # Opening JSON file
-    f = open('data.json')
+    f = open('data-limit.json')
     data = json.load(f)
     data = data['data']['marketplace']
     result_list = []
