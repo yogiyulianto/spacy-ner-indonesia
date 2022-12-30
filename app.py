@@ -72,6 +72,7 @@ def all():
             'riwayat_sebelumnya' : riwayat_sebelumnya,
             'tkb_platform' : tkb_platform,
             'type_pendanaan' : type_pendanaan,
+            'total_plafond' : i['sisaPlafond'],
             'tanggal_mulai' : tanggal_mulai,
             'tanggal_selesai' : tanggal_selesai,
             'progress_pendanaan': progress_pendanaan,
